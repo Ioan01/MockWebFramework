@@ -1,7 +1,11 @@
-﻿class Program
+﻿using MockWebFramework.Networking;
+
+class Program
 {
-    static void Main(string[] args)
+    static async Task Main(string[] args)
     {
-        Console.WriteLine("Hello, World!");
+        TcpHost host = new TcpHost();
+
+        await host.Listen();
     }
 }

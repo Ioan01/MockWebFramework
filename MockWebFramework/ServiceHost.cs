@@ -8,9 +8,5 @@ namespace MockWebFramework
 {
     internal class ServiceHost
     {
-
-
-
-
     }
 }
