@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using MockWebFramework.Networking.HttpRequest;
 
 namespace MockWebFramework.Networking
 {
@@ -40,6 +41,8 @@ namespace MockWebFramework.Networking
 
         
 
+        
+
         public TcpHost()
         {
             _listener = TcpListener.Create(80);
@@ -64,9 +67,12 @@ namespace MockWebFramework.Networking
                 while (true)
                 {
                     if (_listener.Pending())
-                        HandleClient(await _listener.AcceptSocketAsync());
-
-                    Thread.Sleep(1);
+                    {
+                        var socket = await _listener.AcceptSocketAsync();
+                        Console.WriteLine(ThreadPool.ThreadCount);
+                        ThreadPool.QueueUserWorkItem(_ => HandleClient(socket));
+                        Thread.Sleep(1);
+                    }
                 }
             }
             catch (Exception e)
@@ -77,7 +83,7 @@ namespace MockWebFramework.Networking
             
         }
 
-        private async void HandleClient(Socket clientSocket)
+        private void HandleClient(Socket clientSocket)
         {
             Buffer? freeBuffer = null;
 
@@ -102,13 +108,13 @@ namespace MockWebFramework.Networking
                     freeBuffer.Free = false;
             }
             
-            await clientSocket.ReceiveAsync(freeBuffer.ArraySegment,SocketFlags.None);
+            clientSocket.Receive(freeBuffer.ArraySegment.Span,SocketFlags.None);
             
 
             
 
 
-            var request = new HttpRequest(freeBuffer.ArraySegment);
+            var request = new HttpRequest.HttpRequest(freeBuffer.ArraySegment);
 
             PacketReceivedEvent?.Invoke(this, new RequestReceivedEvent(request, clientSocket));
 

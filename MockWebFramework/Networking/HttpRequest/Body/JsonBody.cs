@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MockWebFramework
+namespace MockWebFramework.Networking.HttpRequest.Body
 {
-    internal class ServiceHost
+    internal class JsonBody : HttpBody
     {
     }
 }

@@ -1,11 +1,17 @@
-﻿using MockWebFramework.Networking;
+﻿using MockWebFramework;
+using MockWebFramework.Logging;
+using MockWebFramework.Networking;
 
 class Program
 {
     static async Task Main(string[] args)
     {
-        TcpHost host = new TcpHost();
+        var web = new WebServer();
+        web.Controllers.RegisterControllers();
 
-        await host.Listen();
+        await web.Start();
+
+        Console.ResetColor();
+
     }
 }

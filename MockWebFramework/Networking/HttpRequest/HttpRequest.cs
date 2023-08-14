@@ -4,8 +4,9 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using MockWebFramework.Networking.HttpRequest.Body;
 
-namespace MockWebFramework.Networking
+namespace MockWebFramework.Networking.HttpRequest
 {
     internal class HttpRequest
     {
@@ -14,13 +15,14 @@ namespace MockWebFramework.Networking
         private readonly int _maxHeaderSize = 1024;
 
 
-        private string Verb;
+        public string Verb { get; private set; }
 
-        private string Route;
+        public string[] Route { get; private set; }
 
-        private Dictionary<string,string> Headers = new();
+        public Dictionary<string, Header> Headers { get; } = new();
 
-        private Memory<byte> content;
+        public HttpBody Body { get; private set; }
+
 
         private void ExtractRoute(Memory<byte> buffer, ref int index)
         {
@@ -36,24 +38,36 @@ namespace MockWebFramework.Networking
 
             Verb = verb.ToString();
 
+            int routeNumber = 1;
+
             while (buffer.Span[index] != ' ')
             {
                 route.Append((char)buffer.Span[index++]);
+                if (buffer.Span[index] == '/')
+                    routeNumber++;
             }
 
-            Route = route.ToString();
+            Route = route.ToString().Split('/').Skip(1).ToArray();
 
+            if (Route.Last() != String.Empty)
+            {
+                //Route
+                if (Route.Last()[0] == '?')
+                {
+                    // query
 
+                }
+            }
 
-            while (buffer.Span[index] != 0xd && buffer.Span[index+1] != 0xa)
+            while (buffer.Span[index] != 0xd && buffer.Span[index + 1] != 0xa)
             {
                 index++;
             }
 
-            index+=2;
+            index += 2;
         }
 
-        private void ExtractHeaders(Memory<byte> buffer,ref int index)
+        private void ExtractHeaders(Memory<byte> buffer, ref int index)
         {
             bool doubleEnding = false;
 
@@ -72,14 +86,14 @@ namespace MockWebFramework.Networking
 
                 if (buffer.Span[headerEnd] == 0xa)
                 {
-                    InterpretHeader(buffer.Slice(headerStart, headerEnd-headerStart-1));
-                    headerStart = headerEnd+1;
+                    InterpretHeader(buffer.Slice(headerStart, headerEnd - headerStart - 1));
+                    headerStart = headerEnd + 1;
                     if (buffer.Span[headerStart] == 0xd)
-                        if (buffer.Span[headerStart+1] == 0xa)
+                        if (buffer.Span[headerStart + 1] == 0xa)
                             doubleEnding = true;
                 }
                 else break;
-                    
+
 
             }
 
@@ -96,8 +110,11 @@ namespace MockWebFramework.Networking
                 headerNameIndex++;
             }
 
-            Headers.Add(Encoding.UTF8.GetString(headerString.Span.Slice(0,headerNameIndex)),
-                Encoding.UTF8.GetString(headerString.Span.Slice(headerNameIndex+2)));
+            var headerName = Encoding.UTF8.GetString(headerString.Span.Slice(0, headerNameIndex));
+
+            var headerValue = Encoding.UTF8.GetString(headerString.Span.Slice(headerNameIndex + 2));
+
+            Headers.Add(headerName,new Header(headerName,headerValue));
 
         }
 
@@ -106,10 +123,10 @@ namespace MockWebFramework.Networking
 
             int index = 0;
 
-            ExtractRoute(buffer,ref index);
+            ExtractRoute(buffer, ref index);
 
 
-            ExtractHeaders(buffer.Slice(index),ref index);
+            ExtractHeaders(buffer.Slice(index), ref index);
 
             ExtractContent(buffer.Slice(index));
 
@@ -117,16 +134,17 @@ namespace MockWebFramework.Networking
 
         private void ExtractContent(Memory<byte> slice)
         {
-            
-            content = new byte[slice.Length];
-            slice.CopyTo(content);
+            var contentType = Headers["Content-Type"];
 
-            Console.WriteLine(GetContentAsString());
+
+
+            if (contentType != null)
+
+            contentBytes = new byte[slice.Length];
+            slice.CopyTo(contentBytes);
+
+            Console.WriteLine(Content);
         }
 
-        public string GetContentAsString()
-        {
-            return Encoding.UTF8.GetString(content.Span);
-        }
     }
 }
