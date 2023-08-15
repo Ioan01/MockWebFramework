@@ -8,5 +8,8 @@ namespace MockWebFramework.Networking.HttpRequest.Body
 {
     internal class FileBody : HttpBody
     {
+        public FileBody(Memory<byte> contentBytes) : base(contentBytes)
+        {
+        }
     }
 }

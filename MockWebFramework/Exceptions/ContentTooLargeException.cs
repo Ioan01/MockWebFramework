@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace MockWebFramework.Exceptions
 {
-    internal class NotFoundException : HttpException
+    internal class ContentTooLargeException : HttpException
     {
-        public NotFoundException(string? message = null) : base(404,"Not found",message)
+        public ContentTooLargeException(string? message = null) : base(413, "Content Too Large",message)
         {
-
         }
     }
 }

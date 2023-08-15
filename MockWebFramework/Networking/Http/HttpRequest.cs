@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using MockWebFramework.Exceptions;
 using MockWebFramework.Networking.HttpRequest.Body;
 
 namespace MockWebFramework.Networking.HttpRequest
@@ -19,7 +20,7 @@ namespace MockWebFramework.Networking.HttpRequest
 
         public string[] Route { get; private set; }
 
-        public Dictionary<string, Header> Headers { get; } = new();
+        public Dictionary<string, Header?> Headers { get; } = new();
 
         public HttpBody Body { get; private set; }
 
@@ -132,18 +133,34 @@ namespace MockWebFramework.Networking.HttpRequest
 
         }
 
+        
+
         private void ExtractContent(Memory<byte> slice)
         {
-            var contentType = Headers["Content-Type"];
+            // slice should start with 0xd 0xa followed by 0 if body is empty, or values if body is not empty
+            if (slice.Length > 3)
+            {
+                if (slice.Span[3] == 0)
+                {
+                    return;
+                }
+            }
 
+            Header? contentType = null;
 
+            if (Headers.ContainsKey("Content-Type"))
+                contentType = Headers["Content-Type"];
 
-            if (contentType != null)
+            // exception handler for incorrect bodies
+            try
+            {
+                Body = HttpBody.ParseBody(contentType?.Values[0], slice.Slice(0, slice.Span.IndexOf((byte)0)));
 
-            contentBytes = new byte[slice.Length];
-            slice.CopyTo(contentBytes);
-
-            Console.WriteLine(Content);
+            }
+            catch (Exception e)
+            {
+                throw new BadRequestException();
+            }
         }
 
     }

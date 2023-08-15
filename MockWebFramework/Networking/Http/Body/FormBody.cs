@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace MockWebFramework.Networking.HttpRequest.Body
 {
-    internal class JsonBody : HttpBody
+    internal class FormBody : HttpBody
     {
+        public FormBody(Memory<byte> contentBytes) : base(contentBytes)
+        {
+        }
     }
 }

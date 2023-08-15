@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace MockWebFramework.Exceptions
 {
-    internal class NotFoundException : HttpException
+    internal class BadRequestException : HttpException
     {
-        public NotFoundException(string? message = null) : base(404,"Not found",message)
+        public BadRequestException(string? message = null) : base(400, "Bad Request",message)
         {
-
         }
     }
 }

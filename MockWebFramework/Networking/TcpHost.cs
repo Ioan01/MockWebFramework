@@ -4,6 +4,8 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using MockWebFramework.Exceptions;
+using MockWebFramework.Networking.Http;
 using MockWebFramework.Networking.HttpRequest;
 
 namespace MockWebFramework.Networking
@@ -85,44 +87,63 @@ namespace MockWebFramework.Networking
 
         private void HandleClient(Socket clientSocket)
         {
-            Buffer? freeBuffer = null;
-
-            if (clientSocket.Available > _maxPacketSizeLarge)
+            try
             {
-                // 413
-                return;
+
+                Buffer? freeBuffer = null;
+
+                if (clientSocket.Available > _maxPacketSizeLarge)
+                {
+                    throw new ContentTooLargeException();
+                }
+
+                // allocate large buffer
+                if (clientSocket.Available > _maxPacketSizeMedium)
+                    freeBuffer = new Buffer(clientSocket.Available);
+
+
+                while (freeBuffer == null)
+                {
+                    if (clientSocket.Available > _maxPacketSizeSmall)
+                        freeBuffer = mediumBuffers.FirstOrDefault(b => b.Free);
+                    else freeBuffer = smallBuffers.FirstOrDefault(b => b.Free);
+
+                    if (freeBuffer != null)
+                        freeBuffer.Free = false;
+                }
+
+                clientSocket.Receive(freeBuffer.ArraySegment.Span, SocketFlags.None);
+
+
+
+
+
+                var request = new HttpRequest.HttpRequest(freeBuffer.ArraySegment);
+
+                PacketReceivedEvent?.Invoke(this, new RequestReceivedEvent(request, clientSocket));
+
+
+                freeBuffer.Free = true;
             }
-
-            // allocate large buffer
-            if (clientSocket.Available > _maxPacketSizeMedium)
-                freeBuffer = new Buffer(clientSocket.Available);
-
-
-            while (freeBuffer == null)
+            catch (HttpException e)
             {
-                if (clientSocket.Available > _maxPacketSizeSmall)
-                    freeBuffer = mediumBuffers.FirstOrDefault(b => b.Free);
-                else freeBuffer = smallBuffers.FirstOrDefault(b => b.Free);
-
-                if (freeBuffer != null) 
-                    freeBuffer.Free = false;
+                var response = new HttpResponse(e.Code, e.Name);
+                response.WriteToSocket(clientSocket);
+                // 400
             }
-            
-            clientSocket.Receive(freeBuffer.ArraySegment.Span,SocketFlags.None);
-            
-
-            
-
-
-            var request = new HttpRequest.HttpRequest(freeBuffer.ArraySegment);
-
-            PacketReceivedEvent?.Invoke(this, new RequestReceivedEvent(request, clientSocket));
-
-
-            freeBuffer.Free = true;
-            clientSocket.Close();
-
+            catch (Exception e)
+            {
+                // 500
+                var response = new HttpResponse(500, "Internal Server Error");
+                response.WriteToSocket(clientSocket);
+            }
+            finally
+            {
+                clientSocket.Close();
+            }
 
         }
+
+        
     }
 }

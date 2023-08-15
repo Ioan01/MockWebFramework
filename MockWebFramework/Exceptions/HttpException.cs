@@ -12,10 +12,13 @@ namespace MockWebFramework.Exceptions
 
         public int Code { get; }
 
-        public HttpException(int code,string name)
+        public string? Message { get; }
+
+        public HttpException(int code,string name, string? message = null)
         {
             Name = name;
             Code = code;
+            Message = message;
         }
 
     }
