@@ -19,27 +19,10 @@ namespace MockWebFramework
         public ServerConfiguration Configuration { get; } = new ServerConfiguration();
         public WebServer()
         {
-            _tcpHost.PacketReceivedEvent += OnPacketReceived;
+            _tcpHost.PacketReceivedEvent += (o, @event) => Controllers.HandleRequest(@event);
         }
 
-        private void OnPacketReceived(object? sender, RequestReceivedEvent e)
-        {
-            try
-            {
-                Controllers.HandleRequest(e);
-            }
-            catch (HttpRequestException httpException)
-            {
-                // print out code
-                
-                
-            }
-            catch (Exception exception)
-            {
-                // internal servor error
-            }
-            
-        }
+        
 
         public async Task Start()
         {

@@ -11,5 +11,12 @@ namespace MockWebFramework.Networking.HttpRequest.Body
         public MultipartFormBody(Memory<byte> contentBytes) : base(contentBytes)
         {
         }
+
+        
+
+        public override string? GetParameter(string name)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

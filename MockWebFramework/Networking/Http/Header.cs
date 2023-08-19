@@ -18,7 +18,7 @@ namespace MockWebFramework.Networking.HttpRequest
             {
                 int index = 0;
                 var byteArray = new byte[Name.Length + 2 + Values.Length 
-                                         + Values.Sum(s => s.Length) + 2];
+                                         + Values.Sum(s => s.Length) + 1];
 
                 foreach (var chr in Name)
                 {
@@ -38,8 +38,7 @@ namespace MockWebFramework.Networking.HttpRequest
                     byteArray[index++] = (byte)',';
 
                 }
-
-                byteArray[index++] = 0xd;
+                byteArray[index-1] = 0xd;
                 byteArray[index] = 0xa;
                 return byteArray;
             }
@@ -55,7 +54,7 @@ namespace MockWebFramework.Networking.HttpRequest
 
         public static List<Header> DefaultHeaders = new List<Header>()
         {
-            new Header("Server","MockFramework")
+            new Header("Server","Macabee")
         };
     }
 }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using MockWebFramework.Exceptions;
+using MockWebFramework.HttpExceptions;
 using MockWebFramework.Networking.HttpRequest.Body;
 
 namespace MockWebFramework.Networking.HttpRequest
@@ -16,13 +16,17 @@ namespace MockWebFramework.Networking.HttpRequest
         private readonly int _maxHeaderSize = 1024;
 
 
-        public string Verb { get; private set; }
+        public string Method { get; private set; }
 
-        public string[] Route { get; private set; }
+        public string[] RouteList { get; private set; }
+
+        public string EndpointRoute { get; private set; }
 
         public Dictionary<string, Header?> Headers { get; } = new();
 
         public HttpBody Body { get; private set; }
+
+        public HttpQuery Query { get; private set; }
 
 
         private void ExtractRoute(Memory<byte> buffer, ref int index)
@@ -37,7 +41,7 @@ namespace MockWebFramework.Networking.HttpRequest
 
             index++;
 
-            Verb = verb.ToString();
+            Method = verb.ToString();
 
             int routeNumber = 1;
 
@@ -48,17 +52,23 @@ namespace MockWebFramework.Networking.HttpRequest
                     routeNumber++;
             }
 
-            Route = route.ToString().Split('/').Skip(1).ToArray();
+            var routeStr = route.ToString();
 
-            if (Route.Last() != String.Empty)
+            RouteList = routeStr.Split('/').Skip(1).ToArray();
+
+            if (RouteList.Last() != String.Empty)
             {
-                //Route
-                if (Route.Last()[0] == '?')
+                var queryIndex = RouteList.Last().IndexOf('?');
+                //RouteList
+                if (queryIndex != -1)
                 {
-                    // query
+                    Query = new HttpQuery(RouteList.Last().Substring(queryIndex));
+                    EndpointRoute = routeStr.Substring(0, routeStr.IndexOf('?'));
 
                 }
+                else EndpointRoute = routeStr.Substring(RouteList[0].Length+1);
             }
+            else EndpointRoute = String.Empty;
 
             while (buffer.Span[index] != 0xd && buffer.Span[index + 1] != 0xa)
             {
@@ -103,8 +113,6 @@ namespace MockWebFramework.Networking.HttpRequest
 
         private void InterpretHeader(Memory<byte> headerString)
         {
-            Console.WriteLine($"Header : {Encoding.UTF8.GetString(headerString.Span)}");
-
             int headerNameIndex = 0;
             while (headerString.Span[headerNameIndex] != ':')
             {

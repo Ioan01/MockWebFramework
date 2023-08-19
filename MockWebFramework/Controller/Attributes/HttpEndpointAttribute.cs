@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace MockWebFramework.Controller.Attributes
 {
+    /// <summary>
+    /// Used to mark controllers functions as http request handlers, specifying the HTTP method, and optionally
+    /// a route name (if left blank, the function name will be used)
+    /// </summary>
     internal class HttpRouteAttribute : Attribute
     {
         public HttpRouteAttribute(string method,string? route)

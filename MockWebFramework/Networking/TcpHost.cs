@@ -4,8 +4,8 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
-using MockWebFramework.Exceptions;
-using MockWebFramework.Networking.Http;
+using MockWebFramework.HttpExceptions;
+using MockWebFramework.Networking.Http.Response;
 using MockWebFramework.Networking.HttpRequest;
 
 namespace MockWebFramework.Networking
@@ -71,7 +71,6 @@ namespace MockWebFramework.Networking
                     if (_listener.Pending())
                     {
                         var socket = await _listener.AcceptSocketAsync();
-                        Console.WriteLine(ThreadPool.ThreadCount);
                         ThreadPool.QueueUserWorkItem(_ => HandleClient(socket));
                         Thread.Sleep(1);
                     }
@@ -79,7 +78,6 @@ namespace MockWebFramework.Networking
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
                 await Listen();
             }
             
@@ -87,6 +85,8 @@ namespace MockWebFramework.Networking
 
         private void HandleClient(Socket clientSocket)
         {
+
+            HttpResponse response = new HttpResponse(0,string.Empty);
             try
             {
 
@@ -101,7 +101,7 @@ namespace MockWebFramework.Networking
                 if (clientSocket.Available > _maxPacketSizeMedium)
                     freeBuffer = new Buffer(clientSocket.Available);
 
-
+                // wait for other buffers to be freed
                 while (freeBuffer == null)
                 {
                     if (clientSocket.Available > _maxPacketSizeSmall)
@@ -120,25 +120,30 @@ namespace MockWebFramework.Networking
 
                 var request = new HttpRequest.HttpRequest(freeBuffer.ArraySegment);
 
-                PacketReceivedEvent?.Invoke(this, new RequestReceivedEvent(request, clientSocket));
+                var @event = new RequestReceivedEvent(request, clientSocket);
 
+                PacketReceivedEvent?.Invoke(this, @event);
+                response = @event.Response;
 
                 freeBuffer.Free = true;
             }
             catch (HttpException e)
             {
-                var response = new HttpResponse(e.Code, e.Name);
-                response.WriteToSocket(clientSocket);
-                // 400
+                response = new HttpResponse(e.Code, e.Name);
             }
             catch (Exception e)
             {
                 // 500
-                var response = new HttpResponse(500, "Internal Server Error");
-                response.WriteToSocket(clientSocket);
+                response = new HttpResponse(500, "Internal Server Error");
             }
             finally
             {
+                if (clientSocket.Connected)
+                {
+                    if (response == null)
+                        response = new HttpResponse(204, "No content");
+                    response.WriteToSocket(clientSocket);
+                }
                 clientSocket.Close();
             }
 

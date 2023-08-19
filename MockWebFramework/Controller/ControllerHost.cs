@@ -1,8 +1,12 @@
 ﻿using System.Reflection;
+using System.Text;
 using MockWebFramework.Controller.Attributes;
-using MockWebFramework.Exceptions;
+using MockWebFramework.HttpExceptions;
 using MockWebFramework.Logging;
 using MockWebFramework.Networking;
+using MockWebFramework.Networking.Http;
+using MockWebFramework.Networking.Http.Response;
+using MockWebFramework.Networking.HttpRequest.Body;
 
 namespace MockWebFramework.Controller
 {
@@ -13,16 +17,29 @@ namespace MockWebFramework.Controller
 
         public void HandleRequest(RequestReceivedEvent e)
         {
-            var controller = _controllers[e.Request.Route[0]];
-
-            if (controller != null)
-            {
-                object returnValue = controller.Handle(e.Request);
-            }
-            else
-            {
+            if (!_controllers.ContainsKey(e.Request.RouteList[0]))
                 throw new NotFoundException();
+            var controller = _controllers[e.Request.RouteList[0]];
+
+            object? returnValue = controller.Handle(e.Request);
+
+            if (returnValue is null)
+            {
+                e.Response = new OK();
+                return;
             }
+
+            if (returnValue is string || returnValue.GetType().IsPrimitive)
+            {
+                e.Response = new OK(new TextBody(Encoding.UTF8.GetBytes(returnValue.ToString())));
+                return;
+            }
+
+
+
+            
+            
+            
         }
 
         public void RegisterControllers(string @namespace = "Controllers")
@@ -45,7 +62,7 @@ namespace MockWebFramework.Controller
             string controllerName;
 
             var prefixAttribute = controllerType.GetCustomAttributes()
-                .First(attr => attr is ControllerPrefixAttribute) as ControllerPrefixAttribute;
+                .FirstOrDefault(attr => attr is ControllerPrefixAttribute) as ControllerPrefixAttribute;
 
             if (prefixAttribute != null)
             {
@@ -53,17 +70,21 @@ namespace MockWebFramework.Controller
             }
             else if (controllerType.Name.EndsWith("controller", true, null))
             {
-                controllerName = 
+                controllerName = '/' +
                     controllerType.Name.Substring(0, controllerType.Name.Length - "controller".Length);
             }
-            else { controllerName = controllerType.Name; }
+            else { controllerName = '/' + controllerType.Name; }
+
+            if (controllerName == "/")
+                controllerName = String.Empty;
+            else controllerName = controllerName.ToLower();
 
             if (_controllers.ContainsKey(controllerName))
                 throw new Exception($"Controller {controllerName} is already defined");
 
 
 
-            _controllers.Add(controllerName, new ControllerRegistration(controllerType,controllerName));
+            _controllers.Add(controllerName.Substring(1), new ControllerRegistration(controllerType,controllerName));
 
         }
     }

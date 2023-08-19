@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using MockWebFramework.Networking.Http.Response;
 using MockWebFramework.Networking.HttpRequest;
 
 namespace MockWebFramework.Networking
@@ -14,10 +15,14 @@ namespace MockWebFramework.Networking
 
         public Socket ClientSocket { get; }
 
-        public RequestReceivedEvent(HttpRequest.HttpRequest request, Socket clientSocket)
+        public HttpResponse Response { get; set; }
+
+        public RequestReceivedEvent(HttpRequest.HttpRequest request,Socket clientSocket)
         {
             Request = request;
             ClientSocket = clientSocket;
         }
+
+        
     }
 }

@@ -3,16 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using MockWebFramework.Controller.Attributes;
+using MockWebFramework.HttpExceptions;
 using MockWebFramework.Logging;
+using MockWebFramework.Networking.Http;
 using MockWebFramework.Networking.HttpRequest;
 
 namespace MockWebFramework.Controller
 {
     internal class ControllerRegistration
     {
-        private Dictionary<(string,string), Endpoint> endpoints = new();
+        // might be more efficient to do some sort of tree traversal through the path to do route matching
+        //
+        private List<Endpoint> endpoints = new();
 
 
         public ControllerRegistration(Type type,string controllerName)
@@ -35,17 +40,11 @@ namespace MockWebFramework.Controller
 
                     if (routeAttribute != null)
                     {
-                        var endpoint = new Endpoint(methodInfo);
+                        var endpoint = new Endpoint(methodInfo,routeAttribute);
+                        endpoints.Add(new Endpoint(methodInfo,routeAttribute));
                     }
                     
-
-
                 }
-
-
-
-
-
 
             }
         }
@@ -55,9 +54,27 @@ namespace MockWebFramework.Controller
 
         public object Controller { get; }
 
-        public object Handle(HttpRequest request)
+        public object? Handle(HttpRequest request)
         {
-            return null;
+            MatchCollection? matches = null;
+            var endpoint = endpoints.FirstOrDefault(endpoint =>
+            {
+                if (endpoint.Method == request.Method)
+                {
+                    matches = endpoint.PathMatcher.Matches(request.EndpointRoute);
+                    if (matches.Count > 0)
+                        return true;
+                }
+
+                return false;
+            });
+
+            if (endpoint == null)
+                throw new NotFoundException();
+
+            var val =  endpoint.Invoke(Controller,request,matches);
+
+            return val;
         }
     }
 }

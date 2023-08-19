@@ -36,6 +36,7 @@ namespace MockWebFramework.Logging
                 Console.ResetColor();
                 Console.ForegroundColor = ConsoleColor.Red;
             }
+
             Console.WriteLine(format("ERROR", message));
         }
 

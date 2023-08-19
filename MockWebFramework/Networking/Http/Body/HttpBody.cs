@@ -10,6 +10,7 @@ namespace MockWebFramework.Networking.HttpRequest.Body
 {
     public static class ContentTypes
     {
+        public const string ContentType = "Content-Type";
         public const string PlainText = "text/plain";
         public const string Json = "application/json";
         public const string Xml = "application/xml";
@@ -21,12 +22,14 @@ namespace MockWebFramework.Networking.HttpRequest.Body
 
     }
 
-    internal class HttpBody
+    internal abstract class HttpBody
     {
         protected Memory<byte> contentBytes;
 
-        public virtual int ContentLength { get; protected set; }
-        public byte[] Bytes => null;
+        public  int ContentLength => contentBytes.Length;
+        public byte[] Bytes => contentBytes.ToArray();
+
+        public abstract string? GetParameter(string name);
 
         public static HttpBody ParseBody(string? contentType,Memory<byte> content)
         {
