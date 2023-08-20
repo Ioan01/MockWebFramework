@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using MockWebFramework.Controller.Attributes;
+using MockWebFramework.HttpExceptions;
 using MockWebFramework.Logging;
 using MockWebFramework.Networking.HttpRequest;
 
@@ -98,6 +99,35 @@ namespace MockWebFramework.Controller
 
         }
 
+        private object ConvertToParameterType(ParameterInfo parameterInfo, string value)
+        {
+            if (parameterInfo.ParameterType == typeof(string))
+                return value;
+
+            try
+            {
+                if (parameterInfo.ParameterType == typeof(int))
+                    return Int32.Parse(value);
+
+                if (parameterInfo.ParameterType == typeof(float))
+                    return float.Parse(value);
+
+                if (parameterInfo.ParameterType == typeof(double))
+                    return Double.Parse(value);
+
+                if (parameterInfo.ParameterType == typeof(bool))
+                    return Boolean.Parse(value);
+
+                throw new InternalServerErrorException();
+
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message,null,ex);
+            }
+            
+        }
+
         public object? Invoke(object controller, HttpRequest httpRequest, MatchCollection? matchCollection)
         {
             object[] @params = new object[parameters.Count];
@@ -109,13 +139,13 @@ namespace MockWebFramework.Controller
                 switch (source)
                 {
                     case ParameterSource.FromBody:
-                        @params[index++] = httpRequest.Body.GetParameter(parameterInfo.Name);
+                        @params[index++] = ConvertToParameterType(parameterInfo,httpRequest.Body.GetParameter(parameterInfo.Name));
                         break;
                     case ParameterSource.FromRoute:
-                        @params[index++] = matchCollection[0].Groups[routeIndex++].Value;
+                        @params[index++] = ConvertToParameterType(parameterInfo,matchCollection[0].Groups[routeIndex++].Value);
                         break;
                     case ParameterSource.FromQuery:
-                        @params[index++] = httpRequest.Query.Parameters[parameterInfo.Name];
+                        @params[index++] = ConvertToParameterType(parameterInfo, httpRequest.Query.Parameters[parameterInfo.Name]);
                         break;
                 }
             }

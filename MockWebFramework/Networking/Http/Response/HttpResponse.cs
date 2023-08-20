@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using MockWebFramework.Networking.Http.Body;
 using MockWebFramework.Networking.HttpRequest;
 using MockWebFramework.Networking.HttpRequest.Body;
 
@@ -32,7 +33,7 @@ namespace MockWebFramework.Networking.Http.Response
             if (body.GetType().IsPrimitive || body is string)
             {
                 Body = new TextBody(Encoding.UTF8.GetBytes(body.ToString() ?? string.Empty));
-                Headers.Add(new Header(ContentTypes.ContentType,ContentTypes.PlainText));
+                Headers.Add(new Header(ContentTypes.ContentType,ContentTypes.TextPlain));
             }
 
             else if (body is HttpBody httpBody)
@@ -62,9 +63,17 @@ namespace MockWebFramework.Networking.Http.Response
             }
 
             socket.Send(new Header("Date", DateTime.Now.ToString("R")).Bytes);
-            socket.Send(new Header("Content-Length",
-                Body != null ? Body.ContentLength.ToString() : "0").Bytes);
+
+            if (Body != null)
+            {
+                socket.Send(new Header("Content-Length", Body.ContentLength.ToString()).Bytes);
+                socket.Send(Body.ContentTypeHeader.Bytes);
+            }
+            else socket.Send(Header.EmptyBodyHeader.Bytes);
+
             socket.Send(newLine);
+
+
             if (Body != null)
             {
                 socket.Send(Body.Bytes);

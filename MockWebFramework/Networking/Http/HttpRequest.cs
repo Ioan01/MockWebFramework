@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using MockWebFramework.HttpExceptions;
+using MockWebFramework.Networking.Http.Body;
 using MockWebFramework.Networking.HttpRequest.Body;
 
 namespace MockWebFramework.Networking.HttpRequest

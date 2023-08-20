@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using MockWebFramework.HttpExceptions;
+using MockWebFramework.Networking.Http.Body;
 using MockWebFramework.Networking.Http.Response;
 using MockWebFramework.Networking.HttpRequest;
 
@@ -129,12 +130,14 @@ namespace MockWebFramework.Networking
             }
             catch (HttpException e)
             {
-                response = new HttpResponse(e.Code, e.Name);
+                response = new HttpResponse(e.Code, e.Name,new ErrorBody(e.ToString()));
+                if (e.Headers !=  null)
+                    response.Headers.AddRange(e.Headers);
             }
             catch (Exception e)
             {
                 // 500
-                response = new HttpResponse(500, "Internal Server Error");
+                response = new HttpResponse(500, "Internal Server Error",new ErrorBody(e.ToString()));
             }
             finally
             {

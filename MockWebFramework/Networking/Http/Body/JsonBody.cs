@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MockWebFramework.Networking.Http.Body;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -13,6 +14,8 @@ namespace MockWebFramework.Networking.HttpRequest.Body
         private JObject body;
 
         private string? deserializedBody;
+
+        public override Header? ContentTypeHeader => ContentTypes.GetContentTypeHeader(ContentTypes.Json);
 
         public JsonBody(Memory<byte> contentBytes) : base(contentBytes)
         {

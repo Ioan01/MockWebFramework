@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MockWebFramework.Networking.Http.Body;
 
 namespace MockWebFramework.Networking.HttpRequest.Body
 {
@@ -12,7 +13,8 @@ namespace MockWebFramework.Networking.HttpRequest.Body
         {
         }
 
-     
+
+        public override Header? ContentTypeHeader => ContentTypes.GetContentTypeHeader(ContentTypes.FormData);
 
         public override string? GetParameter(string name)
         {

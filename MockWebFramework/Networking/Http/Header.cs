@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MockWebFramework.Networking.HttpRequest
 {
-    internal class Header
+    public class Header
     {
         public string Name { get; }
 
@@ -56,5 +56,9 @@ namespace MockWebFramework.Networking.HttpRequest
         {
             new Header("Server","Macabee")
         };
+
+        public static Header EmptyBodyHeader = new Header("Content-Length", "0");
+
+
     }
 }

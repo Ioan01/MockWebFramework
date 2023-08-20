@@ -18,7 +18,7 @@ namespace MockWebFramework.Controller.Attributes
             Method = method;
         }
 
-        protected HttpRouteAttribute(string method)
+        public HttpRouteAttribute(string method)
         {
             Method = method;
         }

@@ -1,8 +1,10 @@
-﻿namespace MockWebFramework.HttpExceptions
+﻿using MockWebFramework.Networking.HttpRequest;
+
+namespace MockWebFramework.HttpExceptions
 {
     internal class BadRequestException : HttpException
     {
-        public BadRequestException(string? message = null) : base(400, "Bad Request",message)
+        public BadRequestException(string? message = null,IEnumerable<Header>?headers = null,Exception? innerException = null) : base(400, message,headers, innerException)
         {
         }
     }

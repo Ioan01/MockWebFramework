@@ -57,6 +57,8 @@ namespace MockWebFramework.Controller
         public object? Handle(HttpRequest request)
         {
             MatchCollection? matches = null;
+
+            // try to find the requested endpoint
             var endpoint = endpoints.FirstOrDefault(endpoint =>
             {
                 if (endpoint.Method == request.Method)
@@ -69,8 +71,25 @@ namespace MockWebFramework.Controller
                 return false;
             });
 
+            // if not found try to find all endpoints with different methods to throw 
+            // Method not allowed with the right allow headers
             if (endpoint == null)
-                throw new NotFoundException();
+            {
+                var sameNameEndpoints = endpoints.Where(e => e.PathMatcher.IsMatch(request.EndpointRoute));
+                if (sameNameEndpoints.Count() == 0)
+                    throw new NotFoundException();
+                // create allow header with all allowed methods for the endpoint
+                throw new MethodNotAllowedException(null, new[]
+                {
+                    new Header("Allow", sameNameEndpoints.Aggregate("", (s, endpoint1) =>
+                    {
+                        if (String.IsNullOrEmpty(s))
+                            return s + endpoint1.Method;
+                        return s + $", {endpoint1.Method}";
+                    }))
+                });
+
+            }
 
             var val =  endpoint.Invoke(Controller,request,matches);
 
