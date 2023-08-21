@@ -20,5 +20,10 @@ namespace MockWebFramework.Networking.HttpRequest.Body
         {
             throw new NotImplementedException();
         }
+
+        public object As(Type type)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

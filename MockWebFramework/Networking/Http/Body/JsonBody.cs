@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MockWebFramework.HttpExceptions;
 using MockWebFramework.Networking.Http.Body;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -33,6 +34,13 @@ namespace MockWebFramework.Networking.HttpRequest.Body
         public override string? GetParameter(string name)
         {
             return body[name]?.Value<string>(); 
+        }
+
+
+
+        public object As(Type type)
+        {
+            return body.ToObject(type) ?? throw new BadRequestException();
         }
     }
 }

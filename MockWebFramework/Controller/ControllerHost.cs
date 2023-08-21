@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using System.Text;
 using MockWebFramework.Controller.Attributes;
+using MockWebFramework.Controller.Attributes.Endpoint;
 using MockWebFramework.HttpExceptions;
 using MockWebFramework.Logging;
 using MockWebFramework.Networking;
@@ -34,6 +35,8 @@ namespace MockWebFramework.Controller
                 e.Response = new OK(new TextBody(Encoding.UTF8.GetBytes(returnValue.ToString())));
                 return;
             }
+
+            e.Response = new OK(new JsonBody(returnValue));
 
 
 

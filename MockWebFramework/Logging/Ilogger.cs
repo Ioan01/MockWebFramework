@@ -24,7 +24,7 @@ namespace MockWebFramework.Logging
 
         void LogFatal(string message);
 
-        public static Ilogger Instance => new BasicLogger();
-
+        public static Ilogger Instance { get; } = new BasicLogger();
+        bool LoggedErrorsOrFatals { get; }
     }
 }

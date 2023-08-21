@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MockWebFramework.Controller.Attributes
+namespace MockWebFramework.Controller.Attributes.Endpoint
 {
     /// <summary>
     /// Used to mark controllers functions as http request handlers, specifying the HTTP method, and optionally
@@ -12,19 +12,19 @@ namespace MockWebFramework.Controller.Attributes
     /// </summary>
     internal class HttpRouteAttribute : Attribute
     {
-        public HttpRouteAttribute(string method,string? route)
+        public HttpRouteAttribute(string method, string? route = null,string? produces = null)
         {
             Route = route;
+            Produces = produces;
             Method = method;
         }
 
-        public HttpRouteAttribute(string method)
-        {
-            Method = method;
-        }
+        
 
-        public string? Route { get;}
+        public string? Route { get; }
 
         public string Method { get; }
+
+        public string? Produces { get; }
     }
 }

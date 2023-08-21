@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MockWebFramework.Networking;
 using MockWebFramework.Controller;
+using MockWebFramework.Logging;
 using MockWebFramework.Service;
 
 namespace MockWebFramework
@@ -26,6 +27,9 @@ namespace MockWebFramework
 
         public async Task Start()
         {
+            if (Ilogger.Instance.LoggedErrorsOrFatals)
+                return;
+
             await _tcpHost.Listen();
         }
     }

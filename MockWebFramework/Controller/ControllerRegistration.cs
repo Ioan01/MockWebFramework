@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using MockWebFramework.Controller.Attributes;
+using MockWebFramework.Controller.Attributes.Endpoint;
 using MockWebFramework.HttpExceptions;
 using MockWebFramework.Logging;
 using MockWebFramework.Networking.Http;
@@ -41,7 +41,7 @@ namespace MockWebFramework.Controller
                     if (routeAttribute != null)
                     {
                         var endpoint = new Endpoint(methodInfo,routeAttribute);
-                        endpoints.Add(new Endpoint(methodInfo,routeAttribute));
+                        endpoints.Add(endpoint);
                     }
                     
                 }

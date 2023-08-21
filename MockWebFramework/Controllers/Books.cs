@@ -4,6 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MockWebFramework.Controller.Attributes.Endpoint;
+using MockWebFramework.Controller.Attributes.From;
+using MockWebFramework.Models;
+using MockWebFramework.Networking.Http.Body;
 
 namespace MockWebFramework.Controllers
 {
@@ -12,9 +16,16 @@ namespace MockWebFramework.Controllers
         private int count;
 
         [HttpGet("get/bookid")]
-        public string Get([FromRoute]int bookId, [FromQuery]int sort)
+        public Book Get([FromRoute]string bookId, [FromQuery]int? sort)
         {
-            return $"Book {bookId} sort {sort}";
+            return new Book()
+            {
+                Name = bookId,
+                Author = "dasdas",
+                Price = 213,
+                Year = sort
+            };
+
         }
 
         [HttpGet]
@@ -35,6 +46,18 @@ namespace MockWebFramework.Controllers
         public int Count()
         {
             return 1;
+        }
+
+        [HttpPost]
+        public Book GetById([FromBody]Book id)
+        {
+            return new Book();
+        }
+
+        [HttpPost]
+        public Book Add([FromBody] Book book)
+        {
+            return book;
         }
 
 

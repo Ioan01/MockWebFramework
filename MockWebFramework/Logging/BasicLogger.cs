@@ -31,6 +31,8 @@ namespace MockWebFramework.Logging
 
         public void LogError(string message)
         {
+            LoggedErrorsOrFatals = true;
+
             if (_lasMessageType != MessageType.Error)
             {
                 Console.ResetColor();
@@ -42,6 +44,7 @@ namespace MockWebFramework.Logging
 
         public void LogFatal(string message)
         {
+            LoggedErrorsOrFatals = true;
             if (_lasMessageType != MessageType.Fatal)
             {
                 Console.ResetColor();
@@ -51,7 +54,8 @@ namespace MockWebFramework.Logging
             Console.WriteLine(format("FATAL", message));
         }
 
-        public static BasicLogger Logger { get; private set; } = new BasicLogger();
+        public bool LoggedErrorsOrFatals { get; private set; }
+
 
 
 

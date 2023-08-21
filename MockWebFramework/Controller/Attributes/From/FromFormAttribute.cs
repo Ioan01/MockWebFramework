@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MockWebFramework.Controller.Attributes
+namespace MockWebFramework.Controller.Attributes.From
 {
     /// <summary>
     /// Specifies that the parameter will be extracted from a application/x-www-form-urlencoded form
