@@ -4,11 +4,9 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
-using MockWebFramework.Networking.Http.Body;
-using MockWebFramework.Networking.HttpRequest;
-using MockWebFramework.Networking.HttpRequest.Body;
+using MockWebFramework.Http.Body;
 
-namespace MockWebFramework.Networking.Http.Response
+namespace MockWebFramework.Http.Response
 {
     internal class HttpResponse
     {
@@ -23,7 +21,7 @@ namespace MockWebFramework.Networking.Http.Response
         private static readonly byte[] newLine = { 0xd, 0xa };
 
 
-        public HttpResponse(int statusCode, string statusName,object? body = null)
+        public HttpResponse(int statusCode, string statusName, object? body = null)
         {
             StatusCode = statusCode;
             StatusName = statusName;
@@ -33,7 +31,7 @@ namespace MockWebFramework.Networking.Http.Response
             if (body.GetType().IsPrimitive || body is string)
             {
                 Body = new TextBody(Encoding.UTF8.GetBytes(body.ToString() ?? string.Empty));
-                Headers.Add(new Header(ContentTypes.ContentType,ContentTypes.TextPlain));
+                Headers.Add(new Header(ContentTypes.ContentType, ContentTypes.TextPlain));
             }
 
             else if (body is HttpBody httpBody)
@@ -44,7 +42,7 @@ namespace MockWebFramework.Networking.Http.Response
             }
         }
 
-        
+
 
         public void WriteToSocket(Socket socket)
         {

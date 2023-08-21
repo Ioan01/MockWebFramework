@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MockWebFramework.Networking.HttpRequest;
-using MockWebFramework.Networking.HttpRequest.Body;
 
-namespace MockWebFramework.Networking.Http.Body
+namespace MockWebFramework.Http.Body
 {
     internal class ErrorBody : HttpBody
     {

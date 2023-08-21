@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MockWebFramework.Networking.Http.Response
+namespace MockWebFramework.Http.Response
 {
     internal class OK : HttpResponse
     {

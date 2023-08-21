@@ -1,11 +1,9 @@
-﻿using MockWebFramework.Networking.HttpRequest;
+﻿using MockWebFramework.Http;
 
-namespace MockWebFramework.HttpExceptions
+namespace MockWebFramework.Http.HttpExceptions
 {
     internal class HttpException : Exception
     {
-
-
 
         public string Name { get; }
 

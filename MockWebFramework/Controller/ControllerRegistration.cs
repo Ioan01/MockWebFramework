@@ -6,10 +6,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using MockWebFramework.Controller.Attributes.Endpoint;
-using MockWebFramework.HttpExceptions;
-using MockWebFramework.Logging;
-using MockWebFramework.Networking.Http;
-using MockWebFramework.Networking.HttpRequest;
+using MockWebFramework.Http;
+using MockWebFramework.Http.HttpExceptions;
+
 
 namespace MockWebFramework.Controller
 {

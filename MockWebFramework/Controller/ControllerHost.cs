@@ -2,12 +2,12 @@
 using System.Text;
 using MockWebFramework.Controller.Attributes;
 using MockWebFramework.Controller.Attributes.Endpoint;
-using MockWebFramework.HttpExceptions;
+using MockWebFramework.Http.Body;
+using MockWebFramework.Http.HttpExceptions;
+using MockWebFramework.Http.Response;
 using MockWebFramework.Logging;
 using MockWebFramework.Networking;
-using MockWebFramework.Networking.Http;
-using MockWebFramework.Networking.Http.Response;
-using MockWebFramework.Networking.HttpRequest.Body;
+
 
 namespace MockWebFramework.Controller
 {

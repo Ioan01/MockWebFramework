@@ -4,10 +4,11 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
-using MockWebFramework.HttpExceptions;
-using MockWebFramework.Networking.Http.Body;
-using MockWebFramework.Networking.Http.Response;
-using MockWebFramework.Networking.HttpRequest;
+using MockWebFramework.Http;
+using MockWebFramework.Http.Body;
+using MockWebFramework.Http.HttpExceptions;
+using MockWebFramework.Http.Response;
+
 
 namespace MockWebFramework.Networking
 {
@@ -119,7 +120,7 @@ namespace MockWebFramework.Networking
 
 
 
-                var request = new HttpRequest.HttpRequest(freeBuffer.ArraySegment);
+                var request = new HttpRequest(freeBuffer.ArraySegment);
 
                 var @event = new RequestReceivedEvent(request, clientSocket);
 

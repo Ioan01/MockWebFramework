@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace MockWebFramework.Networking.HttpRequest
+namespace MockWebFramework.Http
 {
     internal class HttpQuery
     {

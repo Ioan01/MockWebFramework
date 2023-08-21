@@ -11,11 +11,10 @@ using System.Threading.Tasks;
 using MockWebFramework.Controller.Attributes;
 using MockWebFramework.Controller.Attributes.Endpoint;
 using MockWebFramework.Controller.Attributes.From;
-using MockWebFramework.HttpExceptions;
+using MockWebFramework.Http;
+using MockWebFramework.Http.Body;
+using MockWebFramework.Http.HttpExceptions;
 using MockWebFramework.Logging;
-using MockWebFramework.Networking.Http.Body;
-using MockWebFramework.Networking.HttpRequest;
-using MockWebFramework.Networking.HttpRequest.Body;
 
 namespace MockWebFramework.Controller
 {

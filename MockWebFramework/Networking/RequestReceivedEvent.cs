@@ -4,20 +4,20 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
-using MockWebFramework.Networking.Http.Response;
-using MockWebFramework.Networking.HttpRequest;
+using MockWebFramework.Http;
+using MockWebFramework.Http.Response;
 
 namespace MockWebFramework.Networking
 {
     internal class RequestReceivedEvent
     {
-        public HttpRequest.HttpRequest Request { get; }
+        public HttpRequest Request { get; }
 
         public Socket ClientSocket { get; }
 
         public HttpResponse Response { get; set; }
 
-        public RequestReceivedEvent(HttpRequest.HttpRequest request,Socket clientSocket)
+        public RequestReceivedEvent(HttpRequest request,Socket clientSocket)
         {
             Request = request;
             ClientSocket = clientSocket;

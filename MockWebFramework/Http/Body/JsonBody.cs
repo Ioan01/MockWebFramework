@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MockWebFramework.HttpExceptions;
-using MockWebFramework.Networking.Http.Body;
+using MockWebFramework.Http.HttpExceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace MockWebFramework.Networking.HttpRequest.Body
+namespace MockWebFramework.Http.Body
 {
     internal class JsonBody : HttpBody
     {
@@ -33,7 +32,7 @@ namespace MockWebFramework.Networking.HttpRequest.Body
 
         public override string? GetParameter(string name)
         {
-            return body[name]?.Value<string>(); 
+            return body[name]?.Value<string>();
         }
 
 

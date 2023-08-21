@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MockWebFramework.Networking.HttpRequest
+namespace MockWebFramework.Http
 {
     public class Header
     {
@@ -17,7 +17,7 @@ namespace MockWebFramework.Networking.HttpRequest
             get
             {
                 int index = 0;
-                var byteArray = new byte[Name.Length + 2 + Values.Length 
+                var byteArray = new byte[Name.Length + 2 + Values.Length
                                          + Values.Sum(s => s.Length) + 1];
 
                 foreach (var chr in Name)
@@ -38,7 +38,7 @@ namespace MockWebFramework.Networking.HttpRequest
                     byteArray[index++] = (byte)',';
 
                 }
-                byteArray[index-1] = 0xd;
+                byteArray[index - 1] = 0xd;
                 byteArray[index] = 0xa;
                 return byteArray;
             }

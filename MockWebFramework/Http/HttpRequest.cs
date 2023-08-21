@@ -4,11 +4,11 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using MockWebFramework.HttpExceptions;
-using MockWebFramework.Networking.Http.Body;
-using MockWebFramework.Networking.HttpRequest.Body;
+using MockWebFramework.Http.Body;
+using MockWebFramework.Http.HttpExceptions;
 
-namespace MockWebFramework.Networking.HttpRequest
+
+namespace MockWebFramework.Http
 {
     internal class HttpRequest
     {
@@ -57,7 +57,7 @@ namespace MockWebFramework.Networking.HttpRequest
 
             RouteList = routeStr.Split('/').Skip(1).ToArray();
 
-            if (RouteList.Last() != String.Empty)
+            if (RouteList.Last() != string.Empty)
             {
                 var queryIndex = RouteList.Last().IndexOf('?');
                 //RouteList
@@ -67,9 +67,9 @@ namespace MockWebFramework.Networking.HttpRequest
                     EndpointRoute = routeStr.Substring(0, routeStr.IndexOf('?'));
 
                 }
-                else EndpointRoute = routeStr.Substring(RouteList[0].Length+1);
+                else EndpointRoute = routeStr.Substring(RouteList[0].Length + 1);
             }
-            else EndpointRoute = String.Empty;
+            else EndpointRoute = string.Empty;
 
             while (buffer.Span[index] != 0xd && buffer.Span[index + 1] != 0xa)
             {
@@ -124,7 +124,7 @@ namespace MockWebFramework.Networking.HttpRequest
 
             var headerValue = Encoding.UTF8.GetString(headerString.Span.Slice(headerNameIndex + 2));
 
-            Headers.Add(headerName,new Header(headerName,headerValue));
+            Headers.Add(headerName, new Header(headerName, headerValue));
 
         }
 
@@ -142,7 +142,7 @@ namespace MockWebFramework.Networking.HttpRequest
 
         }
 
-        
+
 
         private void ExtractContent(Memory<byte> slice)
         {
