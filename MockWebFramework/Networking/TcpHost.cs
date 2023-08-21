@@ -138,14 +138,14 @@ namespace MockWebFramework.Networking
             catch (Exception e)
             {
                 // 500
-                response = new HttpResponse(500, "Internal Server Error",new ErrorBody(e.ToString()));
+                response = new HttpResponse(HttpStatusCode.InternalServerError, "Internal Server Error",new ErrorBody(e.ToString()));
             }
             finally
             {
                 if (clientSocket.Connected)
                 {
                     if (response == null)
-                        response = new HttpResponse(204, "No content");
+                        response = new HttpResponse(HttpStatusCode.NoContent, "No content");
                     response.WriteToSocket(clientSocket);
                 }
                 clientSocket.Close();

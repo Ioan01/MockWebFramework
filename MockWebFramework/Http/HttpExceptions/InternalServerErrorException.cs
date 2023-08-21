@@ -9,7 +9,7 @@ namespace MockWebFramework.Http.HttpExceptions
 {
     internal class InternalServerErrorException : HttpException
     {
-        public InternalServerErrorException(string? message = null, IEnumerable<Header>? headers = null, Exception? innerException = null) : base(500, message, headers, innerException)
+        public InternalServerErrorException(string? message = null, IEnumerable<Header>? headers = null, Exception? innerException = null) : base(HttpStatusCode.InternalServerError, message, headers, innerException)
         {
         }
     }

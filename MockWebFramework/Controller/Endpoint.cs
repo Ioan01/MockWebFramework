@@ -56,6 +56,8 @@ namespace MockWebFramework.Controller
             return false;
         }
 
+        private bool IsPrimitiveOrString(ParameterInfo p) => p.ParameterType.IsPrimitive || p.ParameterType == typeof(string);
+
         private IEnumerable<ParameterInfo> FilterNullablePrimitives(IEnumerable<ParameterInfo> parameterInfos)
         {
             return parameterInfos.Where(p => !IsNullabePrimitiveOrString(p));
@@ -111,7 +113,7 @@ namespace MockWebFramework.Controller
 
         // fromBody and fromForm can only extract either one or multiple primitive types or one non-string reference
         // type, but not both
-        private void VerifyBodyParams()
+        private void VerifyBodyAndFormParams()
         {
             var classParameterInfos = methodInfo.GetParameters()
                 .Where(p=>p.GetCustomAttributes().Any(attr=>attr is FromFormAttribute || attr is FromBodyAttribute))
@@ -145,7 +147,7 @@ namespace MockWebFramework.Controller
             EnsureNoGetBody();
             VerifyRouteAndQueryParams();
             EnsureNoUnannotatedParams();
-            VerifyBodyParams();
+            VerifyBodyAndFormParams();
 
 
             // get name from route attribute or function name if route is null
@@ -224,17 +226,19 @@ namespace MockWebFramework.Controller
 
         private object ConvertToParameterType(ParameterInfo parameterInfo, HttpBody body)
         {
-            if (IsNullabePrimitiveOrString(parameterInfo))
+            if (IsNullabePrimitiveOrString(parameterInfo) || IsPrimitiveOrString(parameterInfo))
             {
                 return ConvertToParameterType(parameterInfo, body.GetParameter(parameterInfo.Name.ToLower()));
             }
 
-            if (body is not JsonBody && body is not XmlBody)
+            if (body is not JsonBody && body is not XmlBody && body is not FormBody)
                 throw new BadRequestException();
 
             if (body is JsonBody jsonBody)
                 return jsonBody.As(parameterInfo.ParameterType);
 
+            if (body is FormBody formBody)
+                return formBody.As(parameterInfo.ParameterType);
             
             return (body as XmlBody)!.As(parameterInfo.ParameterType);
 
@@ -252,9 +256,16 @@ namespace MockWebFramework.Controller
             {
                 switch (source)
                 {
+                    case ParameterSource.FromForm:
+                        if (httpRequest.Body is not FormBody)
+                            throw new UnsupportedMediaTypeException();
+                        @params[index++] = ConvertToParameterType(parameterInfo, httpRequest.Body);
+                        break;
                     case ParameterSource.FromBody:
-                            @params[index++] = ConvertToParameterType(parameterInfo,httpRequest.Body);
-                            break;
+                        if (httpRequest.Body is not JsonBody or XmlBody)
+                            throw new UnsupportedMediaTypeException();
+                            @params[index++] = ConvertToParameterType(parameterInfo, httpRequest.Body);
+                        break;
                     case ParameterSource.FromRoute:
                         @params[index++] = ConvertToParameterType(parameterInfo,matchCollection[0].Groups[routeIndex++].Value);
                         break;

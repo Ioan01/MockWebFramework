@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,18 +11,19 @@ namespace MockWebFramework.Http.Response
 {
     internal class HttpResponse
     {
-        public int StatusCode { get; }
+        public HttpStatusCode StatusCode { get; }
 
         public string StatusName { get; }
 
         public List<Header> Headers { get; } = new List<Header>();
 
+         
         public HttpBody? Body { get; }
 
         private static readonly byte[] newLine = { 0xd, 0xa };
 
 
-        public HttpResponse(int statusCode, string statusName, object? body = null)
+        public HttpResponse(HttpStatusCode statusCode, string statusName, object? body = null)
         {
             StatusCode = statusCode;
             StatusName = statusName;
@@ -46,7 +48,7 @@ namespace MockWebFramework.Http.Response
 
         public void WriteToSocket(Socket socket)
         {
-            var bytes = Encoding.ASCII.GetBytes($"HTTP/1.1 {StatusCode} {StatusName}\r\n");
+            var bytes = Encoding.ASCII.GetBytes($"HTTP/1.1 {(int)StatusCode} {StatusName}\r\n");
             socket.Send(bytes);
 
             for (int i = 0; i < Header.DefaultHeaders.Count; i++)

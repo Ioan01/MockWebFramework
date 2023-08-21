@@ -11,7 +11,7 @@ namespace MockWebFramework.Http.Body
 {
     internal class JsonBody : HttpBody
     {
-        private JObject body;
+        private JObject body = new JObject();
 
         private string? deserializedBody;
 
@@ -20,7 +20,14 @@ namespace MockWebFramework.Http.Body
         public JsonBody(Memory<byte> contentBytes) : base(contentBytes)
         {
 
-            body = JObject.Parse(Encoding.UTF8.GetString(this.contentBytes.Span));
+            var oldBody = JObject.Parse(Encoding.UTF8.GetString(this.contentBytes.Span));
+
+            foreach (var (str,token) in oldBody)
+            {
+                
+
+                body.Add(str.ToLower(),token);
+            }
         }
 
         public JsonBody(object obj) : base(null)

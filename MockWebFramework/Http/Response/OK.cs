@@ -8,7 +8,7 @@ namespace MockWebFramework.Http.Response
 {
     internal class OK : HttpResponse
     {
-        public OK(object? body = null) : base(200, "OK", body)
+        public OK(object? body = null) : base(HttpStatusCode.OK, "OK", body)
         {
 
         }

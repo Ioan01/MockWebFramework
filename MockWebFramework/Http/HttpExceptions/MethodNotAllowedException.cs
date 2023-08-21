@@ -9,7 +9,7 @@ namespace MockWebFramework.Http.HttpExceptions
 {
     internal class MethodNotAllowedException : HttpException
     {
-        public MethodNotAllowedException(string? message = null, IEnumerable<Header>? headers = null, Exception? innerException = null) : base(405, message, headers, innerException)
+        public MethodNotAllowedException(string? message = null, IEnumerable<Header>? headers = null, Exception? innerException = null) : base(HttpStatusCode.MethodNotAllowed, message, headers, innerException)
         {
         }
     }

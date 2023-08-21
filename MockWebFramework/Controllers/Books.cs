@@ -54,9 +54,13 @@ namespace MockWebFramework.Controllers
         }
 
         [HttpPost]
-        public Book Add([FromBody] Book book)
+        public Book Add([FromBody]string author,[FromBody] int year)
         {
-            return book;
+            return new Book()
+            {
+                Author = author,
+                Year = year
+            };
         }
 
 
