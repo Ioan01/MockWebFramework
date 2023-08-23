@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MockWebFramework.Controller.Attributes.Endpoint;
 using MockWebFramework.Controller.Attributes.From;
+using MockWebFramework.Http.HttpExceptions;
 using MockWebFramework.Models;
 using MockWebFramework.Services.Books;
 
@@ -14,54 +15,37 @@ namespace MockWebFramework.Controllers
     internal class Books
     {
         private readonly LibraryService _service;
-        private int count;
+        
 
         public Books(LibraryService service)
         {
             _service = service;
         }
 
-        [HttpGet("get/bookid")]
-        public Book Get([FromRoute]string bookId, [FromQuery]int? sort)
+        [HttpGet("/get/all")]
+        public List<Book> GetBooks([FromQuery] int? sort, [FromQuery] string? test)
         {
-            return new Book()
+            return _service.GetBooks(sort);
+        }
+
+        [HttpGet("/get/bookid")]
+        public Book? Get([FromRoute]string bookId, [FromQuery]int? sort)
+        {
+            var book = _service.GetBooks(sort).FirstOrDefault(b => b.Name == bookId);
+            if (book == null)
             {
-                Name = bookId,
-                Author = "dasdas",
-                Price = 213,
-                Year = sort
-            };
+                return null;
+            }
 
+            return book;
         }
+
+        
 
         [HttpPost]
-        public int Count([FromBody] int count)
+        public Book Add([FromBody]Book book)
         {
-            this.count += count;
-
-            return this.count;
-        }
-
-        [HttpRoute("PUT")]
-        public int Count()
-        {
-            return 1;
-        }
-
-        [HttpPost]
-        public Book GetById([FromBody]Book id)
-        {
-            return new Book();
-        }
-
-        [HttpPost]
-        public Book Add([FromBody]string author,[FromBody] int year)
-        {
-            return new Book()
-            {
-                Author = author,
-                Year = year
-            };
+            return _service.AddBook(book);
         }
 
 

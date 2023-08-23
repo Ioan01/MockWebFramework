@@ -64,7 +64,7 @@ namespace MockWebFramework.Http
                 if (queryIndex != -1)
                 {
                     Query = new HttpQuery(RouteList.Last().Substring(queryIndex));
-                    EndpointRoute = routeStr.Substring(0, routeStr.IndexOf('?'));
+                    EndpointRoute = routeStr.Substring(RouteList[0].Length + 1, routeStr.IndexOf('?') - RouteList[0].Length-1);
 
                 }
                 else EndpointRoute = routeStr.Substring(RouteList[0].Length + 1);
@@ -138,7 +138,8 @@ namespace MockWebFramework.Http
 
             ExtractHeaders(buffer.Slice(index), ref index);
 
-            ExtractContent(buffer.Slice(index));
+            if (Method != "GET")
+                ExtractContent(buffer.Slice(index));
 
         }
 

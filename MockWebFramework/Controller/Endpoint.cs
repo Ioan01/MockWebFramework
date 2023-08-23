@@ -151,7 +151,7 @@ namespace MockWebFramework.Controller
 
 
             // get name from route attribute or function name if route is null
-            var endpointRoute = httpRouteAttribute.Route != null ? httpRouteAttribute.Route.ToLower() : methodInfo.Name.ToLower();
+            var endpointRoute = httpRouteAttribute.Route != null ?  httpRouteAttribute.Route.ToLower() : "/" + methodInfo.Name.ToLower();
 
 
             StringBuilder pathPattern = new StringBuilder(endpointRoute.Length);
@@ -184,12 +184,12 @@ namespace MockWebFramework.Controller
             // create pattern to allow the capture of route params if route params are used
             // /books/get/(captureGroup)/(captureGroup2)/.... to capture the route param(s)
             if (pathPattern.Length > 0)
-                PathMatcher = new Regex(
+                PathMatcher = new Regex("^"+
                     Regex.Replace(endpointRoute, pathPattern.ToString(),
-                        "([a-zA-Z0-9.-_~!$&'\\(\\)\\-\\*\\+,;=:@]+)"),
+                        "([a-zA-Z0-9.-_~!$&'\\(\\)\\-\\*\\+,;=:@%]+)"),
                     RegexOptions.Compiled | RegexOptions.IgnoreCase);
             // otherwise just create a normal path matcher
-            else PathMatcher = new Regex(endpointRoute, RegexOptions.Compiled);
+            else PathMatcher = new Regex("^" + endpointRoute, RegexOptions.Compiled);
 
 
 
@@ -197,21 +197,28 @@ namespace MockWebFramework.Controller
 
         private object ConvertToParameterType(ParameterInfo parameterInfo, string value)
         {
-            if (parameterInfo.ParameterType == typeof(string))
+
+            var type = parameterInfo.ParameterType;
+            if (IsNullable(parameterInfo))
+                type = parameterInfo.ParameterType.GetGenericArguments()[0];
+
+
+
+            if (type == typeof(string))
                 return value;
 
             try
             {
-                if (parameterInfo.ParameterType == typeof(int))
+                if (type == typeof(Int32))
                     return Int32.Parse(value);
 
-                if (parameterInfo.ParameterType == typeof(float))
+                if (type == typeof(float))
                     return float.Parse(value);
 
-                if (parameterInfo.ParameterType == typeof(double))
+                if (type == typeof(double))
                     return Double.Parse(value);
 
-                if (parameterInfo.ParameterType == typeof(bool))
+                if (type == typeof(bool))
                     return Boolean.Parse(value);
 
                 throw new InternalServerErrorException();
@@ -267,7 +274,8 @@ namespace MockWebFramework.Controller
                             @params[index++] = ConvertToParameterType(parameterInfo, httpRequest.Body);
                         break;
                     case ParameterSource.FromRoute:
-                        @params[index++] = ConvertToParameterType(parameterInfo,matchCollection[0].Groups[routeIndex++].Value);
+                        var routeVal = Uri.UnescapeDataString(matchCollection[0].Groups[routeIndex++].Value);
+                        @params[index++] = ConvertToParameterType(parameterInfo,routeVal);
                         break;
                     case ParameterSource.FromQuery:
                         if (!IsNullable(parameterInfo))

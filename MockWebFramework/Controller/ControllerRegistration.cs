@@ -95,9 +95,20 @@ namespace MockWebFramework.Controller
 
             }
 
-            var val =  endpoint.Invoke(Controller,request,matches);
+            try
+            { 
+                
+                var val =  endpoint.Invoke(Controller,request,matches);
+                return val;
 
-            return val;
+            }
+            catch (Exception e)
+            {
+                if (e.InnerException is HttpException)
+                    throw e.InnerException;
+                throw;
+            }
+
         }
     }
 }

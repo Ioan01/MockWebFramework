@@ -9,7 +9,7 @@ namespace MockWebFramework.Http
 {
     internal class HttpQuery
     {
-        private static Regex _queryRegex = new Regex("([-._~\\w\\d]+)=([-._~\\w\\d]+)", RegexOptions.Compiled);
+        private static Regex _queryRegex = new Regex("([-._~%\\w\\d]+)=([-._~%\\w\\d]+)", RegexOptions.Compiled);
 
 
 
@@ -21,7 +21,7 @@ namespace MockWebFramework.Http
 
             foreach (Match match in matches)
             {
-                Parameters.TryAdd(match.Groups[1].Value, match.Groups[2].Value);
+                Parameters.TryAdd(Uri.UnescapeDataString(match.Groups[1].Value), Uri.UnescapeDataString(match.Groups[2].Value));
             }
         }
     }

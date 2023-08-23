@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -32,8 +33,14 @@ namespace MockWebFramework.Http.Body
 
         public JsonBody(object obj) : base(null)
         {
-            body = JObject.FromObject(obj);
-            contentBytes = new Memory<byte>(Encoding.UTF8.GetBytes(body.ToString()));
+            if (typeof(IEnumerable).IsAssignableFrom(obj.GetType()))
+                contentBytes = new Memory<byte>(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(obj, Formatting.Indented)));
+            else
+            {
+                body = JObject.FromObject(obj);
+                contentBytes = new Memory<byte>(Encoding.UTF8.GetBytes(body.ToString()));
+            }
+            
 
         }
 
