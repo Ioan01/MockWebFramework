@@ -1,20 +1,55 @@
-﻿namespace MockWebFramework.Service
+﻿namespace MockWebFramework.Service;
+
+internal enum ServiceLifespan
 {
-    enum LifeSpan
+    // one instance of the service at all times
+    Singleton,
+
+    // unique instance created in every service injection
+    Prototype
+}
+
+internal class ServiceRegistration
+{
+    private readonly ServiceHost _host;
+
+    public ServiceRegistration(Type serviceType, ServiceLifespan lifespan, ServiceHost host)
     {
-        Singleton,
-        Transient
+        ServiceType = serviceType;
+        _host = host;
+        ServiceLifespan = lifespan;
     }
 
+    public Type ServiceType { get;  }
 
-    internal class ServiceRegistration
+    public Type[] ServiceDependencies { get; set; }
+
+    public ServiceLifespan ServiceLifespan { get; }
+
+    public string ServiceName { get; }
+
+
+    private object? _serviceInstance;
+
+    public object? Service
     {
-        public Type ServiceType { get; set; }
+        get
+        {
+            if (ServiceLifespan == ServiceLifespan.Prototype)
+            {
+                var dependencies = _host.ResolveDependencies(this);
+                return Activator.CreateInstance(ServiceType, dependencies);
+            }
 
-        public string ServiceName { get; set; }
+            if (_serviceInstance == null)
+            {
+                var dependencies = _host.ResolveDependencies(this);
+                _serviceInstance = Activator.CreateInstance(ServiceType, dependencies);
+            }
+            
 
-        public object Service { get; set; }
 
-
+            return _serviceInstance;
+        }
     }
 }

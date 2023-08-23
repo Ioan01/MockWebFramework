@@ -7,13 +7,20 @@ using MockWebFramework.Http.HttpExceptions;
 using MockWebFramework.Http.Response;
 using MockWebFramework.Logging;
 using MockWebFramework.Networking;
+using MockWebFramework.Service;
 
 
 namespace MockWebFramework.Controller
 {
     internal class ControllerHost
     {
+        private readonly ServiceHost _services;
         private Dictionary<string, ControllerRegistration> _controllers = new();
+
+        public ControllerHost(ServiceHost services)
+        {
+            _services = services;
+        }
 
 
         public void HandleRequest(RequestReceivedEvent e)
@@ -47,7 +54,7 @@ namespace MockWebFramework.Controller
 
         public void RegisterControllers(string @namespace = "Controllers")
         {
-            var controllers = Assembly.GetExecutingAssembly().GetTypes().Where(t=>t.Namespace != null && t.Namespace.EndsWith("Controllers"));
+            var controllers = Assembly.GetExecutingAssembly().GetTypes().Where(t=>t.Namespace != null &&  !t.Namespace.StartsWith("System") && t.Namespace.Contains(@namespace));
             foreach (var controller in controllers)
             {
                 if (!controller.GetMethods()
@@ -87,7 +94,7 @@ namespace MockWebFramework.Controller
 
 
 
-            _controllers.Add(controllerName.Substring(1), new ControllerRegistration(controllerType,controllerName));
+            _controllers.Add(controllerName.Substring(1), new ControllerRegistration(controllerType,controllerName,_services));
 
         }
     }

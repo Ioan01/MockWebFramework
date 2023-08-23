@@ -7,12 +7,19 @@ using System.Threading.Tasks;
 using MockWebFramework.Controller.Attributes.Endpoint;
 using MockWebFramework.Controller.Attributes.From;
 using MockWebFramework.Models;
+using MockWebFramework.Services.Books;
 
 namespace MockWebFramework.Controllers
 {
     internal class Books
     {
+        private readonly LibraryService _service;
         private int count;
+
+        public Books(LibraryService service)
+        {
+            _service = service;
+        }
 
         [HttpGet("get/bookid")]
         public Book Get([FromRoute]string bookId, [FromQuery]int? sort)

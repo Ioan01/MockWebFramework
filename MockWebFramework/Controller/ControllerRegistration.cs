@@ -8,22 +8,27 @@ using System.Threading.Tasks;
 using MockWebFramework.Controller.Attributes.Endpoint;
 using MockWebFramework.Http;
 using MockWebFramework.Http.HttpExceptions;
+using MockWebFramework.Service;
 
 
 namespace MockWebFramework.Controller
 {
     internal class ControllerRegistration
     {
+        private readonly ServiceHost _serviceHost;
+
         // might be more efficient to do some sort of tree traversal through the path to do route matching
         //
         private List<Endpoint> endpoints = new();
 
 
-        public ControllerRegistration(Type type,string controllerName)
+        public ControllerRegistration(Type type, string controllerName, ServiceHost serviceHost)
         {
+            _serviceHost = serviceHost;
             ControllerName = controllerName;
 
-            Controller = Activator.CreateInstance(type) ?? throw new Exception("Could not instantiate controller");
+            var dependencies = _serviceHost.ResolveDependencies(type);
+            Controller = Activator.CreateInstance(type,dependencies) ?? throw new Exception("Could not instantiate controller");
 
             MapRoutes(type);
         }

@@ -14,16 +14,23 @@ namespace MockWebFramework
     internal class WebServer
     {
         private TcpHost _tcpHost = new TcpHost();
-        public ControllerHost Controllers { get; } = new ControllerHost();
-        public ServiceHost Services { get; } = new ServiceHost();
 
-        public ServerConfiguration Configuration { get; } = new ServerConfiguration();
+        public ServiceHost Services { get; }
+
+        public ControllerHost Controllers { get; }
+
         public WebServer()
         {
+
+            Services = new ServiceHost();
+            Controllers = new ControllerHost(Services);
+
             _tcpHost.PacketReceivedEvent += (o, @event) => Controllers.HandleRequest(@event);
+
+
         }
 
-        
+
 
         public async Task Start()
         {
