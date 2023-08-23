@@ -6,8 +6,8 @@ namespace MockWebFramework.Service;
 
 internal class ServiceHost
 {
-    private readonly ServiceContainer _container;
-
+    private readonly ServiceContainer _container = new ServiceContainer();
+    public ServiceContainer ServiceContainer => _container;
 
 
     public void AddSingleton<T>()

@@ -8,7 +8,7 @@ class Program
     {
         var web = new WebServer();
         web.Services.RegisterServices();
-        web.Services.
+        
 
         web.Controllers.RegisterControllers();
 
