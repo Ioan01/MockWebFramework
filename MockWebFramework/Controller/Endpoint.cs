@@ -65,6 +65,11 @@ namespace MockWebFramework.Controller
             return parameterInfos.Where(p => !IsNullabePrimitiveOrString(p));
         }
 
+        private IEnumerable<ParameterInfo> FilterIEnumerableOrListTypes(IEnumerable<ParameterInfo> parameterInfos)
+        {
+            return parameterInfos.Where(p => !typeof(IEnumerable).IsAssignableFrom(p.ParameterType));
+        }
+
         // ensure get endpoints do not use [fromBody] or [fromForm]
         private void EnsureNoGetBody()
         {
@@ -108,13 +113,15 @@ namespace MockWebFramework.Controller
             // remove parameters with nullable primitive or string types
             routeAndQueryParams = FilterNullablePrimitives(routeAndQueryParams);
 
+            
+
 
             if (routeAndQueryParams.Any(p => !p.ParameterType.IsPrimitive && p.ParameterType != typeof(string))) 
                 Ilogger.Instance.LogFatal($"{methodInfo.Name} from {methodInfo.DeclaringType.Name} has route or query parameters of non-string reference types");
         }
 
         // fromBody and fromForm can only extract either one or multiple primitive types or one non-string reference
-        // type, but not both
+        // type, but not both - it can have multiple ienumerable types with non-primitive type arguments though
         private void VerifyBodyAndFormParams()
         {
             var classParameterInfos = methodInfo.GetParameters()
@@ -124,6 +131,10 @@ namespace MockWebFramework.Controller
             // remove parameters with nullable primitive or string types
 
             classParameterInfos = FilterNullablePrimitives(classParameterInfos).ToArray();
+
+            // remove with ienumerable / list types
+
+            classParameterInfos = FilterIEnumerableOrListTypes(classParameterInfos).ToArray();
 
             // cannot have multiple non-string reference types parameters
             if (classParameterInfos.Length > 1)

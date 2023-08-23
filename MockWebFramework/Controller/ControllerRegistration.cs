@@ -106,7 +106,7 @@ namespace MockWebFramework.Controller
             {
                 if (e.InnerException is HttpException)
                     throw e.InnerException;
-                throw;
+                throw new BadRequestException();
             }
 
         }

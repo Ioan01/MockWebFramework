@@ -49,14 +49,27 @@ namespace MockWebFramework.Controllers
         }
 
         [HttpPost]
-        public IEnumerable<string> AddMultiple([FromBody] IEnumerable<string> books)
+        public IEnumerable<Book> AddMultiple([FromBody] IEnumerable<Book> books)
         {
-
-            return books;
-;            
+            return _service.AddBooks(books);
         }
 
-        
+        [HttpPost]
+        public IEnumerable<string> AddMultipleLetters([FromBody] IEnumerable<string> letters)
+        {
+
+            return letters;
+            ;
+        }
+
+        [HttpPost]
+
+        public IEnumerable<string> GetArrayFromObject([FromBody] IEnumerable<string> array, [FromBody] int a,
+            [FromBody] IEnumerable<Book> books)
+        {
+            return array; 
+
+        }
 
 
 
