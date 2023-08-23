@@ -14,10 +14,10 @@ namespace MockWebFramework.Controller
 {
     internal class ControllerHost
     {
-        private readonly ServiceHost _services;
+        private readonly ServiceContainer _services;
         private Dictionary<string, ControllerRegistration> _controllers = new();
 
-        public ControllerHost(ServiceHost services)
+        public ControllerHost(ServiceContainer services)
         {
             _services = services;
         }

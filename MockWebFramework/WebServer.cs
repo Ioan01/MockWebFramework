@@ -23,7 +23,7 @@ namespace MockWebFramework
         {
 
             Services = new ServiceHost();
-            Controllers = new ControllerHost(Services);
+            Controllers = new ControllerHost(Services.ServiceContainer);
 
             _tcpHost.PacketReceivedEvent += (o, @event) => Controllers.HandleRequest(@event);
 

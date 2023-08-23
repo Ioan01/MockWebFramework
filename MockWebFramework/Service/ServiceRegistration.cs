@@ -11,9 +11,9 @@ internal enum ServiceLifespan
 
 internal class ServiceRegistration
 {
-    private readonly ServiceHost _host;
+    private readonly ServiceContainer _host;
 
-    public ServiceRegistration(Type serviceType, ServiceLifespan lifespan, ServiceHost host)
+    public ServiceRegistration(Type serviceType, ServiceLifespan lifespan, ServiceContainer host)
     {
         ServiceType = serviceType;
         _host = host;

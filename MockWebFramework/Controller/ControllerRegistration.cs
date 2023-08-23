@@ -15,19 +15,19 @@ namespace MockWebFramework.Controller
 {
     internal class ControllerRegistration
     {
-        private readonly ServiceHost _serviceHost;
+        private readonly ServiceContainer _serviceContainer;
 
         // might be more efficient to do some sort of tree traversal through the path to do route matching
         //
         private List<Endpoint> endpoints = new();
 
 
-        public ControllerRegistration(Type type, string controllerName, ServiceHost serviceHost)
+        public ControllerRegistration(Type type, string controllerName, ServiceContainer serviceContainer)
         {
-            _serviceHost = serviceHost;
+            _serviceContainer = serviceContainer;
             ControllerName = controllerName;
 
-            var dependencies = _serviceHost.ResolveDependencies(type);
+            var dependencies = _serviceContainer.ResolveDependencies(type);
             Controller = Activator.CreateInstance(type,dependencies) ?? throw new Exception("Could not instantiate controller");
 
             MapRoutes(type);
