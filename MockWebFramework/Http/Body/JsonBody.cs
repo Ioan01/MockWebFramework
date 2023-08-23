@@ -10,7 +10,7 @@ using Newtonsoft.Json.Linq;
 
 namespace MockWebFramework.Http.Body
 {
-    internal class JsonBody : HttpBody
+    internal class JsonBody : ObjectBody
     {
         private JObject body = new JObject();
 
@@ -49,11 +49,19 @@ namespace MockWebFramework.Http.Body
             return body[name]?.Value<string>();
         }
 
+        public override object GetArray(string name, Type type)
+        { 
+            var arr = body[name] as JArray;
+
+            return arr.ToObject(type);
+        }
 
 
         public object As(Type type)
         {
             return body.ToObject(type) ?? throw new BadRequestException();
         }
+
+        
     }
 }

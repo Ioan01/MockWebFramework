@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace MockWebFramework.Http.Body
 {
-    internal class FormBody : HttpBody
+    internal class FormBody : ObjectBody
     {
         private Dictionary<string,string> _formBody = new Dictionary<string,string>();
 
@@ -61,6 +61,11 @@ namespace MockWebFramework.Http.Body
                 throw new BadRequestException();
 
             return _formBody[name];
+        }
+
+        public override object[] GetArray(string name, Type tpe)
+        {
+            throw new NotImplementedException();
         }
 
         public object As(Type type)

@@ -15,9 +15,6 @@ namespace MockWebFramework.Http.Body
 
         public override Header? ContentTypeHeader => ContentTypes.GetContentTypeHeader(ContentTypes.File);
 
-        public override string? GetParameter(string name)
-        {
-            throw new NotImplementedException();
-        }
+
     }
 }

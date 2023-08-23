@@ -45,5 +45,11 @@ namespace MockWebFramework.Services.Books
         }
 
 
+        public IEnumerable<Book> AddBooks(IEnumerable<Book> list)
+        {
+            books.AddRange(list);
+
+            return books;
+        }
     }
 }

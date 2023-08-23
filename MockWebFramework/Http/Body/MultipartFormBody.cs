@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MockWebFramework.Http.Body
 {
-    internal class MultipartFormBody : HttpBody
+    internal class MultipartFormBody : ObjectBody
     {
 
         public override Header? ContentTypeHeader => ContentTypes.GetContentTypeHeader(ContentTypes.MultipartForm);
@@ -15,8 +15,12 @@ namespace MockWebFramework.Http.Body
         }
 
 
-
         public override string? GetParameter(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override object[] GetArray(string name, Type tpe)
         {
             throw new NotImplementedException();
         }

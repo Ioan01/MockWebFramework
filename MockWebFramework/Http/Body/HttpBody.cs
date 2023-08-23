@@ -1,4 +1,5 @@
 ﻿using System.Net.Mime;
+using Newtonsoft.Json.Linq;
 
 namespace MockWebFramework.Http.Body
 {
@@ -13,7 +14,6 @@ namespace MockWebFramework.Http.Body
 
         public abstract Header? ContentTypeHeader { get; }
 
-        public abstract string? GetParameter(string name);
 
         public static HttpBody ParseBody(string? contentType, Memory<byte> content)
         {
@@ -49,5 +49,6 @@ namespace MockWebFramework.Http.Body
             this.contentBytes = new Memory<byte>(new byte[contentBytes.Length]);
             contentBytes.CopyTo(this.contentBytes);
         }
+
     }
 }

@@ -48,6 +48,17 @@ namespace MockWebFramework.Controllers
             return _service.AddBook(book);
         }
 
+        [HttpPost]
+        public IEnumerable<string> AddMultiple([FromBody] IEnumerable<string> books)
+        {
+
+            return books;
+;            
+        }
+
+        
+
+
 
 
     }

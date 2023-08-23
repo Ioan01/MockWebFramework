@@ -13,9 +13,6 @@ namespace MockWebFramework.Http.Body
         {
         }
 
-        public override string? GetParameter(string name)
-        {
-            throw new NotImplementedException();
-        }
+
     }
 }

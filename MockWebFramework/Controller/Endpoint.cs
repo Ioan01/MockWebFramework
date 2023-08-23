@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics.Contracts;
@@ -15,6 +16,7 @@ using MockWebFramework.Http;
 using MockWebFramework.Http.Body;
 using MockWebFramework.Http.HttpExceptions;
 using MockWebFramework.Logging;
+using Newtonsoft.Json.Linq;
 
 namespace MockWebFramework.Controller
 {
@@ -186,10 +188,10 @@ namespace MockWebFramework.Controller
             if (pathPattern.Length > 0)
                 PathMatcher = new Regex("^"+
                     Regex.Replace(endpointRoute, pathPattern.ToString(),
-                        "([a-zA-Z0-9.-_~!$&'\\(\\)\\-\\*\\+,;=:@%]+)"),
+                        "([a-zA-Z0-9.-_~!$&'\\(\\)\\-\\*\\+,;=:@%]+)") + "$",
                     RegexOptions.Compiled | RegexOptions.IgnoreCase);
             // otherwise just create a normal path matcher
-            else PathMatcher = new Regex("^" + endpointRoute, RegexOptions.Compiled);
+            else PathMatcher = new Regex("^" + endpointRoute + "$", RegexOptions.Compiled);
 
 
 
@@ -231,12 +233,15 @@ namespace MockWebFramework.Controller
             
         }
 
-        private object ConvertToParameterType(ParameterInfo parameterInfo, HttpBody body)
+        private object ConvertToParameterType(ParameterInfo parameterInfo, ObjectBody body)
         {
             if (IsNullabePrimitiveOrString(parameterInfo) || IsPrimitiveOrString(parameterInfo))
             {
                 return ConvertToParameterType(parameterInfo, body.GetParameter(parameterInfo.Name.ToLower()));
             }
+
+            if (typeof(IEnumerable).IsAssignableFrom(parameterInfo.ParameterType))
+                return body.GetArray(parameterInfo.Name.ToLower(),parameterInfo.ParameterType);
 
             if (body is not JsonBody && body is not XmlBody && body is not FormBody)
                 throw new BadRequestException();
@@ -266,12 +271,12 @@ namespace MockWebFramework.Controller
                     case ParameterSource.FromForm:
                         if (httpRequest.Body is not FormBody)
                             throw new UnsupportedMediaTypeException();
-                        @params[index++] = ConvertToParameterType(parameterInfo, httpRequest.Body);
+                        @params[index++] = ConvertToParameterType(parameterInfo, httpRequest.Body as FormBody);
                         break;
                     case ParameterSource.FromBody:
                         if (httpRequest.Body is not JsonBody or XmlBody)
                             throw new UnsupportedMediaTypeException();
-                            @params[index++] = ConvertToParameterType(parameterInfo, httpRequest.Body);
+                            @params[index++] = ConvertToParameterType(parameterInfo, httpRequest.Body as ObjectBody);
                         break;
                     case ParameterSource.FromRoute:
                         var routeVal = Uri.UnescapeDataString(matchCollection[0].Groups[routeIndex++].Value);
