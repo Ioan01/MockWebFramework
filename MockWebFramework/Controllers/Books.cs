@@ -34,12 +34,6 @@ namespace MockWebFramework.Controllers
 
         }
 
-        [HttpGet]
-        public string Get([FromQuery] string mata)
-        {
-            return $"Ma-ta e {mata}";
-        }
-
         [HttpPost]
         public int Count([FromBody] int count)
         {
