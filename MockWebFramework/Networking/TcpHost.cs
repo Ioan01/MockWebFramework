@@ -131,14 +131,23 @@ namespace MockWebFramework.Networking
             }
             catch (HttpException e)
             {
-                response = new HttpResponse(e.Code, e.Name,new ErrorBody(e.ToString()));
+                string errorBody;
+                if (String.IsNullOrEmpty(e.Message))
+                    errorBody = e.ToString();
+                else errorBody = e.Message;
+
+                response = new HttpResponse(e.Code, e.Name,new ErrorBody(errorBody));
                 if (e.Headers !=  null)
                     response.Headers.AddRange(e.Headers);
             }
             catch (Exception e)
             {
                 // 500
-                response = new HttpResponse(HttpStatusCode.InternalServerError, "Internal Server Error",new ErrorBody(e.ToString()));
+                string errorBody;
+                if (String.IsNullOrEmpty(e.Message))
+                    errorBody = e.ToString();
+                else errorBody = e.Message;
+                response = new HttpResponse(HttpStatusCode.InternalServerError, "Internal Server Error",new ErrorBody(errorBody));
             }
             finally
             {

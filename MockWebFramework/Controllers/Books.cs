@@ -25,6 +25,8 @@ namespace MockWebFramework.Controllers
         [HttpGet("/get/all")]
         public List<Book> GetBooks([FromQuery] int? sort, [FromQuery] string? test)
         {
+            if (_service.GetBooks(sort).Count == 10)
+                throw new NotFoundException("asddas");
             return _service.GetBooks(sort);
         }
 
